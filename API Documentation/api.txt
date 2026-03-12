@@ -1,0 +1,19 @@
+
+1. Auth APIs
+
+| Method | Endpoint           | Description   |
+| ------ | ------------------ | ------------- |
+| POST   | /api/auth/register | Register user |
+| POST   | /api/auth/login    | Login user    |
+
+
+2. Task APIs
+| Method | Endpoint                  | Role       |
+| ------ | ------------------------- | ---------- |
+| GET    | /api/tasks                | USER/ADMIN |
+| POST   | /api/tasks                | USER       |
+| PUT    | /api/tasks/{id}           | USER       |
+| DELETE | /api/tasks/{id}           | USER       |
+| GET    | /api/tasks?status=TODO    | Filter     |
+| GET    | /api/tasks?page=0&size=10 | Pagination |
+

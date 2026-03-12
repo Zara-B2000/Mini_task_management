@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Mini Task Management System
 
 ## Project Overview
@@ -141,4 +142,3 @@ npm run dev
 
 Application runs on
 http://localhost:3000
-

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Mini Task Management System
 
 ## Project Overview
@@ -14,39 +13,39 @@ Users can create, update, delete, and manage tasks while ADMIN users can view al
 
 Frontend
 
-* Next.js
-* Axios
+- Next.js
+- Axios
 
 Backend
 
-* Spring Boot
-* Spring Security
-* JWT Authentication
+- Spring Boot
+- Spring Security
+- JWT Authentication
 
 Database
 
-* MySQL
+- MySQL
 
 Tools
 
-* Postman
-* GitHub
+- Postman
+- GitHub
 
 ---
 
 ## Features
 
-* User Registration
-* User Login using JWT Authentication
-* Role-Based Access Control (ADMIN / USER)
-* Create Tasks
-* Update Tasks
-* Delete Tasks
-* View Tasks
-* Filter by Status
-* Filter by Priority
-* Pagination
-* Sorting by Due Date and Priority
+- User Registration
+- User Login using JWT Authentication
+- Role-Based Access Control (ADMIN / USER)
+- Create Tasks
+- Update Tasks
+- Delete Tasks
+- View Tasks
+- Filter by Status
+- Filter by Priority
+- Pagination
+- Sorting by Due Date and Priority
 
 ---
 
@@ -56,23 +55,23 @@ Two main tables are used:
 
 Users Table
 
-* id
-* username
-* email
-* password
-* role
+- id
+- username
+- email
+- password
+- role
 
 Tasks Table
 
-* id
-* title
-* description
-* status
-* priority
-* dueDate
-* createdAt
-* updatedAt
-* userId
+- id
+- title
+- description
+- status
+- priority
+- dueDate
+- createdAt
+- updatedAt
+- userId
 
 ---
 
@@ -142,3 +141,18 @@ npm run dev
 
 Application runs on
 http://localhost:3000
+
+---
+
+## Folder Structure
+
+frontend/
+backend/
+database/
+README.md
+
+---
+
+## Author
+
+Developed as part of Mini Task Management System assignment.

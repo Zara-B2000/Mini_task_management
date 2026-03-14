@@ -118,18 +118,26 @@ public class TaskController {
     // ✅ Get all tasks with pagination (legacy, now role-based)
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/all")
-    public Page<Task> getAllTasks(Pageable pageable) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email);
-        if (user != null && user.getRole().equals("ADMIN")) {
-            return taskService.getAllTasks(pageable);
-        } else if (user != null) {
-            return taskService.getTasksForUser(user.getId(), pageable);
-        } else {
-            return Page.empty();
-        }
+public Page<Task> getAllTasks(Pageable pageable) {
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+
+    User user = userRepository.findByEmail(email);
+
+    System.out.println("Logged email: " + email);
+    System.out.println("User ID: " + user.getId());
+    System.out.println("User Role: " + user.getRole());
+
+    if (user != null && user.getRole().equals("ADMIN")) {
+        return taskService.getAllTasks(pageable);
+    } else if (user != null) {
+        return taskService.getTasksForUser(user.getId(), pageable);
     }
+
+    return Page.empty();
+
+}
 
     // ✅ Get task by ID
     @PreAuthorize("hasAnyRole('ADMIN','USER')")

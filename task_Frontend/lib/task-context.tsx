@@ -73,6 +73,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
       try {
         const token = getToken();
         const data = await fetchAllTasksApi(token);
+        console.log("/tasks/all API response:", data);
         // Normalize backend data to Task[]
         const mappedTasks = Array.isArray(data)
           ? data.map((t: any) => ({
@@ -86,6 +87,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
               completed: t.completed ?? t.status === "completed",
             }))
           : [];
+        console.log("Mapped tasks:", mappedTasks);
+        console.log("Logged-in user id:", user?.id?.toString());
         setTasks(mappedTasks);
       } catch (e) {
         setTasks([]);
@@ -95,9 +98,15 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   // Get tasks based on user role
-  const userTasks = tasks.filter(
-    (task) => task.userId === user?.id?.toString(),
-  );
+  const userTasks = tasks.filter((task) => {
+    const match = task.userId === user?.id?.toString();
+    if (!match) {
+      console.log(
+        `Task filtered out: task.userId=${task.userId}, user.id=${user?.id?.toString()}`,
+      );
+    }
+    return match;
+  });
   const allTasks = tasks; // Admin can see all tasks
 
   const addTask = (task: Omit<Task, "id" | "completed" | "userId">) => {

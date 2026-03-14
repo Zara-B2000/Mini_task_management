@@ -29,7 +29,7 @@ public class Task {
     private LocalDateTime updatedAt;
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 

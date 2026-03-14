@@ -33,10 +33,13 @@ export async function fetchAllTasksApi(token: string) {
 }
 export async function createTaskApi(task: any) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : "";
   const res = await fetch(`${apiUrl}/tasks/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(task),
     credentials: "include", // if you need cookies/auth

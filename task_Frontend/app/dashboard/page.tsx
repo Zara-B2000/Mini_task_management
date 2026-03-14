@@ -1,36 +1,53 @@
-"use client"
+"use client";
 
-import { useTasks } from "@/lib/task-context"
-import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
-import { StatsCard } from "@/components/dashboard/stats-card"
-import { Header } from "@/components/dashboard/header"
-import { TaskTable } from "@/components/dashboard/task-table"
-import { TaskChart } from "@/components/dashboard/task-chart"
-import { TaskPagination } from "@/components/dashboard/task-pagination"
-import { useState } from "react"
-import {
-  CheckCircle2,
-  Clock,
-  ListTodo,
-  TrendingUp,
-} from "lucide-react"
+import { useTasks } from "@/lib/task-context";
+import { useEffect, useState } from "react";
+import { fetchTaskCountsApi } from "@/lib/api";
+import { getToken } from "@/lib/task-context";
+import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { StatsCard } from "@/components/dashboard/stats-card";
+import { Header } from "@/components/dashboard/header";
+import { TaskTable } from "@/components/dashboard/task-table";
+import { TaskChart } from "@/components/dashboard/task-chart";
+import { TaskPagination } from "@/components/dashboard/task-pagination";
+import { CheckCircle2, Clock, ListTodo, TrendingUp } from "lucide-react";
 
-const TASKS_PER_PAGE = 5
+const TASKS_PER_PAGE = 5;
 
 export default function DashboardPage() {
-  const { userTasks, toggleComplete, updateTask, deleteTask } = useTasks()
-  const [currentPage, setCurrentPage] = useState(1)
+  const { userTasks, toggleComplete, updateTask, deleteTask } = useTasks();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [counts, setCounts] = useState<{ [key: string]: number }>({});
+  const [loadingCounts, setLoadingCounts] = useState(true);
 
-  const completedTasks = userTasks.filter((t) => t.completed).length
-  const inProgressTasks = userTasks.filter((t) => t.status === "in-progress").length
-  const pendingTasks = userTasks.filter((t) => t.status === "pending").length
-  const productivity = userTasks.length > 0 ? Math.round((completedTasks / userTasks.length) * 100) : 0
+  useEffect(() => {
+    const fetchCounts = async () => {
+      setLoadingCounts(true);
+      try {
+        const token = getToken();
+        const data = await fetchTaskCountsApi(token);
+        setCounts(data);
+      } catch {
+        setCounts({});
+      } finally {
+        setLoadingCounts(false);
+      }
+    };
+    fetchCounts();
+  }, []);
 
-  const totalPages = Math.ceil(userTasks.length / TASKS_PER_PAGE)
+  const completedTasks = counts.DONE ?? 0;
+  const inProgressTasks = counts.IN_PROGRESS ?? 0;
+  const pendingTasks = counts.TODO ?? 0;
+  const totalTasks = counts.TOTAL ?? userTasks.length;
+  const productivity =
+    totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  const totalPages = Math.ceil(userTasks.length / TASKS_PER_PAGE);
   const paginatedTasks = userTasks.slice(
     (currentPage - 1) * TASKS_PER_PAGE,
-    currentPage * TASKS_PER_PAGE
-  )
+    currentPage * TASKS_PER_PAGE,
+  );
 
   return (
     <DashboardLayout>
@@ -44,14 +61,14 @@ export default function DashboardPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatsCard
             title="Total Tasks"
-            value={userTasks.length}
-            change={`${pendingTasks} pending`}
+            value={loadingCounts ? "-" : totalTasks}
+            change={loadingCounts ? "" : `${pendingTasks} pending`}
             changeType="neutral"
             icon={ListTodo}
           />
           <StatsCard
             title="In Progress"
-            value={inProgressTasks}
+            value={loadingCounts ? "-" : inProgressTasks}
             change="Active tasks"
             changeType="neutral"
             icon={Clock}
@@ -59,7 +76,7 @@ export default function DashboardPage() {
           />
           <StatsCard
             title="Completed"
-            value={completedTasks}
+            value={loadingCounts ? "-" : completedTasks}
             change="Tasks done"
             changeType="positive"
             icon={CheckCircle2}
@@ -67,7 +84,7 @@ export default function DashboardPage() {
           />
           <StatsCard
             title="Productivity"
-            value={`${productivity}%`}
+            value={loadingCounts ? "-" : `${productivity}%`}
             change="Completion rate"
             changeType={productivity > 50 ? "positive" : "neutral"}
             icon={TrendingUp}
@@ -101,5 +118,5 @@ export default function DashboardPage() {
         )}
       </div>
     </DashboardLayout>
-  )
+  );
 }

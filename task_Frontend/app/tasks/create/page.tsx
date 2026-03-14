@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTasks, Task } from "@/lib/task-context"
+import { createTaskApi } from "@/lib/api"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Header } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
@@ -35,33 +36,24 @@ export default function CreateTaskPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
     if (!formData.title || !formData.dueDate) {
       return
     }
-
     setIsLoading(true)
-    
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    
-    addTask(formData)
-    setIsLoading(false)
-    router.push("/tasks")
+    try {
+      await createTaskApi(formData)
+      // Optionally: addTask(formData) to update local state if needed
+      router.push("/tasks")
+    } catch (err) {
+      // Optionally: show error toast
+      alert('Failed to create task')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <DashboardLayout>
-      <div className="mx-auto max-w-2xl space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/tasks">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <Header title="Create Task" subtitle="Add a new task to your list" />
-        </div>
-
         <Card className="border-border bg-card">
           <form onSubmit={handleSubmit}>
             <CardHeader>
@@ -137,6 +129,26 @@ export default function CreateTaskPage() {
                     required
                   />
                 </Field>
+              </FieldGroup>
+              {/* JSON Preview */}
+              <div className="mt-6 rounded bg-muted p-4 font-mono text-sm text-muted-foreground">
+                <span>{'{'}</span><br />
+                <span>&nbsp;&nbsp;"title": "{formData.title}",</span><br />
+                <span>&nbsp;&nbsp;"description": "{formData.description}",</span><br />
+                <span>&nbsp;&nbsp;"status": "{formData.status}",</span><br />
+                <span>&nbsp;&nbsp;"priority": "{formData.priority}",</span><br />
+                <span>&nbsp;&nbsp;"dueDate": "{formData.dueDate}"</span><br />
+                <span>{'}'}</span>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end gap-2">
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? <Spinner className="mr-2 h-4 w-4" /> : null}
+                Add Task
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
               </FieldGroup>
             </CardContent>
             <CardFooter className="flex justify-end gap-4">

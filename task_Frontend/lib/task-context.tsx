@@ -59,6 +59,38 @@ export function getToken() {
   return "";
 }
 
+// Normalize backend status values to frontend values
+function normalizeStatus(status: string): Task["status"] {
+  const upper = (status ?? "").toUpperCase().replace(/-/g, "_");
+  switch (upper) {
+    case "TODO":
+    case "PENDING":
+      return "pending";
+    case "IN_PROGRESS":
+    case "INPROGRESS":
+      return "in-progress";
+    case "DONE":
+    case "COMPLETED":
+      return "completed";
+    default:
+      return "pending";
+  }
+}
+
+// Normalize backend priority values to frontend values
+function normalizePriority(priority: string): Task["priority"] {
+  switch (priority?.toUpperCase()) {
+    case "HIGH":
+      return "high";
+    case "MEDIUM":
+      return "medium";
+    case "LOW":
+      return "low";
+    default:
+      return "medium";
+  }
+}
+
 export function TaskProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const { user, isAdmin } = useAuth();
@@ -76,16 +108,19 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         console.log("/tasks/all API response:", data);
         // Normalize backend data to Task[]
         const mappedTasks = Array.isArray(data)
-          ? data.map((t: any) => ({
-              id: t.id?.toString() ?? "",
-              userId: t.user?.id?.toString() ?? "",
-              title: t.title,
-              description: t.description,
-              priority: t.priority,
-              status: t.status,
-              dueDate: t.dueDate,
-              completed: t.completed ?? t.status === "completed",
-            }))
+          ? data.map((t: any) => {
+              const status = normalizeStatus(t.status);
+              return {
+                id: t.id?.toString() ?? "",
+                userId: t.user?.id?.toString() ?? "",
+                title: t.title,
+                description: t.description ?? "",
+                priority: normalizePriority(t.priority),
+                status,
+                dueDate: t.dueDate ?? "",
+                completed: status === "completed",
+              };
+            })
           : [];
         console.log("Mapped tasks:", mappedTasks);
         console.log("Logged-in user id:", user?.id?.toString());

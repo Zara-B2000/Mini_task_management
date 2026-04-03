@@ -123,8 +123,9 @@ NEXT_PUBLIC_API_URL=http://localhost:8080/api
 1. Navigate to backend folder
 2. Run:
 
-mvn clean install
-mvn spring-boot:run
+.\mvnw clean install
+.\mvnw spring-boot:run
+
 
 Server runs on
 http://localhost:8080

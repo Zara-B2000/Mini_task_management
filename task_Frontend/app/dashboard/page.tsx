@@ -46,8 +46,8 @@ export default function DashboardPage() {
         const token = getToken();
         const [all, inProgress, completed] = await Promise.all([
           fetchAllTasksApi(token),
-          fetchTasksByStatus("IN_PROGRESS", token),
-          fetchTasksByStatus("COMPLETED", token),
+          fetchTasksByStatus("in-progress", token),
+          fetchTasksByStatus("completed", token),
         ]);
         setAllTasks(Array.isArray(all) ? all : []);
         setInProgressTasks(Array.isArray(inProgress) ? inProgress : []);

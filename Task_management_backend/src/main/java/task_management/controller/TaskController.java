@@ -102,14 +102,14 @@ public class TaskController {
         User user = userRepository.findByEmail(email);
         Map<String, Long> counts = new HashMap<>();
         if (user != null && user.getRole().equals("ADMIN")) {
-            counts.put("TODO", taskService.countByStatus("TODO"));
-            counts.put("IN_PROGRESS", taskService.countByStatus("IN_PROGRESS"));
-            counts.put("DONE", taskService.countByStatus("DONE"));
+            counts.put("pending", taskService.countByStatus("pending"));
+            counts.put("in-progress", taskService.countByStatus("in-progress"));
+            counts.put("completed", taskService.countByStatus("completed"));
             counts.put("TOTAL", taskService.countAll());
         } else if (user != null) {
-            counts.put("TODO", taskService.countByUserIdAndStatus(user.getId(), "TODO"));
-            counts.put("IN_PROGRESS", taskService.countByUserIdAndStatus(user.getId(), "IN_PROGRESS"));
-            counts.put("DONE", taskService.countByUserIdAndStatus(user.getId(), "DONE"));
+            counts.put("pending", taskService.countByUserIdAndStatus(user.getId(), "pending"));
+            counts.put("in-progress", taskService.countByUserIdAndStatus(user.getId(), "in-progress"));
+            counts.put("completed", taskService.countByUserIdAndStatus(user.getId(), "completed"));
             counts.put("TOTAL", taskService.countByUserId(user.getId()));
         }
         return counts;

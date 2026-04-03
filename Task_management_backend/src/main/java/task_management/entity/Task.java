@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import task_management.entity.User;
 
 @Entity
-@Table(name="tasks")
+@Table(name="task")
 public class Task {
 
     @Id

@@ -17,6 +17,7 @@ export async function registerApi(
   username: string,
   email: string,
   password: string,
+  role: string,
 ) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
   const res = await fetch(`${apiUrl}/auth/register`, {
@@ -24,7 +25,7 @@ export async function registerApi(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ username, email, password }),
+    body: JSON.stringify({ username, email, password, role }),
   });
   if (!res.ok) {
     throw new Error(await res.text());

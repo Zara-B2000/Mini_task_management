@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { useTasks, Task } from "@/lib/task-context"
+import { updateTaskApi, deleteTaskApi } from "@/lib/api"
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout"
 import { Header } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
@@ -49,30 +50,38 @@ export default function EditTaskPage({ params }: { params: Promise<{ id: string 
         priority: task.priority,
         status: task.status,
         dueDate: task.dueDate,
+        userId: task.userId,
       })
     }
   }, [task])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formData || !formData.title || !formData.dueDate) {
       return
     }
 
     setIsLoading(true)
-    
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    
-    updateTask(id, formData)
-    setIsLoading(false)
-    router.push("/tasks")
+    try {
+      await updateTaskApi(id, formData)
+      updateTask(id, formData)
+      router.push("/tasks")
+    } catch (err) {
+      alert("Failed to update task")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleDelete = () => {
-    deleteTask(id)
-    router.push("/tasks")
+  const handleDelete = async () => {
+    try {
+      await deleteTaskApi(id)
+      deleteTask(id)
+      router.push("/tasks")
+    } catch (err) {
+      alert("Failed to delete task")
+    }
   }
 
   if (!task || !formData) {

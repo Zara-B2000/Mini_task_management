@@ -41,11 +41,11 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
-    const success = await login(email, password);
+    const role = await login(email, password);
     setIsLoading(false);
 
-    if (success) {
-      router.push("/dashboard");
+    if (role) {
+      router.push(role === "admin" ? "/admin" : "/dashboard");
     } else {
       setError("Invalid credentials");
     }

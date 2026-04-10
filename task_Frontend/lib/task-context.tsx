@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useCallback } from "react";
 import { useAuth, User } from "./auth-context";
 
 export interface Task {
@@ -45,6 +45,7 @@ interface TaskContextType {
   getTaskById: (id: string) => Task | undefined;
   canEditTask: (task: Task) => boolean;
   canDeleteTask: (task: Task) => boolean;
+  refreshTasks: () => Promise<void>;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -96,41 +97,42 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   const { user, isAdmin } = useAuth();
 
   // Fetch tasks from backend when user or token changes
-  useEffect(() => {
-    const fetchTasks = async () => {
-      if (!user) {
-        setTasks([]);
-        return;
-      }
-      try {
-        const token = getToken();
-        const data = await fetchAllTasksApi(token);
-        console.log("/tasks/all API response:", data);
-        // Normalize backend data to Task[]
-        const mappedTasks = Array.isArray(data)
-          ? data.map((t: any) => {
-              const status = normalizeStatus(t.status);
-              return {
-                id: t.id?.toString() ?? "",
-                userId: t.user?.id?.toString() ?? "",
-                title: t.title,
-                description: t.description ?? "",
-                priority: normalizePriority(t.priority),
-                status,
-                dueDate: t.dueDate ?? "",
-                completed: status === "completed",
-              };
-            })
-          : [];
-        console.log("Mapped tasks:", mappedTasks);
-        console.log("Logged-in user id:", user?.id?.toString());
-        setTasks(mappedTasks);
-      } catch (e) {
-        setTasks([]);
-      }
-    };
-    fetchTasks();
+  const fetchTasks = useCallback(async () => {
+    if (!user) {
+      setTasks([]);
+      return;
+    }
+    try {
+      const token = getToken();
+      const data = await fetchAllTasksApi(token);
+      console.log("/tasks/all API response:", data);
+      // Normalize backend data to Task[]
+      const mappedTasks = Array.isArray(data)
+        ? data.map((t: any) => {
+            const status = normalizeStatus(t.status);
+            return {
+              id: t.id?.toString() ?? "",
+              userId: t.user?.id?.toString() ?? "",
+              title: t.title,
+              description: t.description ?? "",
+              priority: normalizePriority(t.priority),
+              status,
+              dueDate: t.dueDate ?? "",
+              completed: status === "completed",
+            };
+          })
+        : [];
+      console.log("Mapped tasks:", mappedTasks);
+      console.log("Logged-in user id:", user?.id?.toString());
+      setTasks(mappedTasks);
+    } catch (e) {
+      setTasks([]);
+    }
   }, [user]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
   // Get tasks based on user role
   const userTasks = tasks.filter((task) => {
@@ -291,6 +293,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         getTaskById,
         canEditTask,
         canDeleteTask,
+        refreshTasks: fetchTasks,
       }}
     >
       {children}

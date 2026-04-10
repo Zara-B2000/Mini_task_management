@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth, UserRole } from "@/lib/auth-context";
 
-type UserRole = "ADMIN" | "USER";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -35,7 +34,7 @@ import { CheckSquare, Mail, Lock, User } from "lucide-react";
 export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<UserRole>("USER");
+  const [role, setRole] = useState<UserRole>("user");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -63,7 +62,7 @@ export default function RegisterPage() {
     }
 
     setIsLoading(true);
-    const success = await register(name, email, password);
+    const success = await register(name, email, password, role);
     setIsLoading(false);
 
     if (success) {
@@ -133,8 +132,8 @@ export default function RegisterPage() {
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ADMIN">ADMIN</SelectItem>
-                      <SelectItem value="USER">USER</SelectItem>
+                      <SelectItem value="admin">ADMIN</SelectItem>
+                      <SelectItem value="user">USER</SelectItem>
                     </SelectContent>
                   </Select>
                 </Field>

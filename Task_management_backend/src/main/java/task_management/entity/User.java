@@ -3,7 +3,7 @@ package task_management.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="user")
+@Table(name="users")
 public class User {
 
     @Id

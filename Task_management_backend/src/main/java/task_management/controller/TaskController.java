@@ -125,17 +125,19 @@ public Page<Task> getAllTasks(Pageable pageable) {
 
     User user = userRepository.findByEmail(email);
 
+    if (user == null) {
+        return Page.empty();
+    }
+
     System.out.println("Logged email: " + email);
     System.out.println("User ID: " + user.getId());
     System.out.println("User Role: " + user.getRole());
 
-    if (user != null && user.getRole().equals("ADMIN")) {
+    if (user.getRole().equals("ADMIN")) {
         return taskService.getAllTasks(pageable);
-    } else if (user != null) {
+    } else {
         return taskService.getTasksForUser(user.getId(), pageable);
     }
-
-    return Page.empty();
 
 }
 

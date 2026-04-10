@@ -12,7 +12,6 @@ async function fetchTasksByStatus(status: string, token: string) {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    credentials: "include",
   });
   if (!res.ok) {
     return [];

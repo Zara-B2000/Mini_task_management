@@ -25,7 +25,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   isAdmin: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<string | null>;
   register: (
     name: string,
     email: string,
@@ -57,16 +57,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<string | null> => {
     try {
       const res = await loginApi(email, password);
       // res: { token, user: { id, username, email, role } }
       if (res && res.token && res.user) {
+        const role = res.user.role.toLowerCase();
         setUser({
           id: res.user.id,
           name: res.user.username,
           email: res.user.email,
-          role: res.user.role.toLowerCase(),
+          role,
           avatar:
             "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face",
         });
@@ -76,17 +77,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             id: res.user.id,
             name: res.user.username,
             email: res.user.email,
-            role: res.user.role.toLowerCase(),
+            role,
             avatar:
               "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face",
           }),
         );
         localStorage.setItem("token", res.token);
-        return true;
+        return role;
       }
-      return false;
+      return null;
     } catch (e) {
-      return false;
+      return null;
     }
   };
 
@@ -97,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     role: UserRole = "user",
   ): Promise<boolean> => {
     try {
-      const res = await registerApi(name, email, password);
+      const res = await registerApi(name, email, password, role.toUpperCase());
       // res: { id, username, email, role }
       if (res && res.id && res.username && res.email && res.role) {
         setUser({

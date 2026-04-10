@@ -6,7 +6,6 @@ export async function fetchTaskCountsApi(token: string) {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    credentials: "include",
   });
   if (!res.ok) {
     throw new Error("Failed to fetch task counts");
@@ -22,7 +21,6 @@ export async function fetchAllTasksApi(token: string) {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    credentials: "include",
   });
   if (!res.ok) {
     throw new Error("Failed to fetch tasks");
@@ -42,10 +40,42 @@ export async function createTaskApi(task: any) {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(task),
-    credentials: "include", // if you need cookies/auth
   });
   if (!res.ok) {
     throw new Error("Failed to create task");
   }
   return res.json();
+}
+
+export async function updateTaskApi(id: string, task: any) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : "";
+  const res = await fetch(`${apiUrl}/tasks/update/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(task),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to update task");
+  }
+  return res.json();
+}
+
+export async function deleteTaskApi(id: string) {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : "";
+  const res = await fetch(`${apiUrl}/tasks/delete/${id}`, {
+    method: "DELETE",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!res.ok) {
+    throw new Error("Failed to delete task");
+  }
 }
